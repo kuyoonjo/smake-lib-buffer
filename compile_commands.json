@@ -1,0 +1,14 @@
+[
+  {
+    "directory": "/Users/yu/Projects/kuyoonjo/smake-lib-buffer",
+    "command": "/opt/homebrew/opt/llvm/bin/clang++ -target x86_64-apple-darwin13 -MD -MF .smake/.test_darwin_x86_64/objs/test/test.cc.o.d -I./include -arch x86_64 -Qunused-arguments -fvisibility=hidden  -fvisibility-inlines-hidden -std=c++17 -c test/test.cc -o .smake/.test_darwin_x86_64/objs/test/test.cc.o",
+    "file": "test/test.cc",
+    "output": ".smake/.test_darwin_x86_64/objs/test/test.cc.o"
+  },
+  {
+    "directory": "/Users/yu/Projects/kuyoonjo/smake-lib-buffer",
+    "command": "/opt/homebrew/opt/llvm/bin/clang++ -L.smake -arch x86_64 .smake/.test_darwin_x86_64/objs/test/test.cc.o -o .smake/test_darwin_x86_64",
+    "file": ".smake/.test_darwin_x86_64/objs/test/test.cc.o",
+    "output": ".smake/test_darwin_x86_64"
+  }
+]
