@@ -18,7 +18,8 @@
     "js"
   ],
   "files": [
-    "lib"
+    "lib",
+    "include"
   ],
   "main": "lib/index",
   "types": "lib/index",
