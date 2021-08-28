@@ -1,9 +1,10 @@
 #include <array>
-#include <ex/buffer.h>
 #include <cassert>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
+#include <ex/buffer.h>
+#include <ex/shared_buffer.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -120,7 +121,7 @@ void testRead() {
 
 void testFill() {
   ex::buffer b(4);
-  std::array<int, 4> tf = {1,2,3,4};
+  std::array<int, 4> tf = {1, 2, 3, 4};
   b.fill(tf);
   assert(b[0] == 1);
   assert(b[1] == 2);
@@ -150,10 +151,39 @@ void testFill() {
   std::cout << "buffer fill OK." << std::endl;
 }
 
+void testSharedBuffer() {
+  ex::buffer b{1, 2, 3, 4, 5};
+  ex::shared_buffer sb(b);
+  int i = 1;
+  for (auto c : sb) {
+    assert(c == i);
+    ++i;
+  }
+  assert(6 == i);
+  sb = ex::shared_buffer(b, 1, 3);
+  i = 2;
+  for (auto c : sb) {
+    assert(c == i);
+    ++i;
+  }
+  assert(5 == i);
+
+  assert(*sb.begin() == 2);
+  assert(*sb.rbegin() == 4);
+  assert(sb[0] == 2);
+
+  sb.fill({0, 0}, 1);
+  assert(sb[0] == 2);
+  assert(sb[1] == 0);
+  assert(sb[2] == 0);
+  std::cout << "shared buffer basic OK." << std::endl;
+}
+
 int main() {
   testBufferFrom();
   testWrite();
   testRead();
   testFill();
+  testSharedBuffer();
   return 0;
 }
