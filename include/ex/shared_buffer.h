@@ -67,7 +67,11 @@ public:
   uint8_t operator[](size_t i) { return m_buffer[i + m_offset]; }
 
   ex::buffer::iterator begin() noexcept { return m_buffer.begin() + m_offset; }
+  ex::buffer::const_iterator begin() const noexcept { return m_buffer.begin() + m_offset; }
   ex::buffer::iterator end() noexcept {
+    return m_buffer.begin() + m_offset + m_size;
+  }
+  ex::buffer::const_iterator end() const noexcept {
     return m_buffer.begin() + m_offset + m_size;
   }
   ex::buffer::reverse_iterator rbegin() noexcept {
@@ -99,7 +103,7 @@ private:
 };
 } // namespace ex
 
-inline std::ostream &operator<<(std::ostream &os, ex::shared_buffer &buffer) {
+inline std::ostream &operator<<(std::ostream &os, const ex::shared_buffer &buffer) {
   os << "SharedBuffer { ";
   for (auto u : buffer) {
     os << std::setfill('0') << std::setw(2) << std::hex << (int)u << ' ';
