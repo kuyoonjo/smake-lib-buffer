@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
+#include <cstring>
 #include <ex/buffer.h>
 #include <ex/shared_buffer.h>
 #include <iostream>
@@ -50,8 +51,8 @@ void testBufferFrom() {
   assert((b[2] == 4));
 
   // from raw array
-  int ra[4] = {4, 5};
-  b = ex::buffer::from(ra, 2);
+  char ra[] = {4, 5};
+  b = ex::buffer::from(ra);
   assert(b.size() == 2);
   assert((b[0] == 4));
   assert((b[1] == 5));
@@ -63,6 +64,23 @@ void testBufferFrom() {
   assert((b[0] == 0x61));
   assert((b[1] == 0x62));
   assert((b[2] == 0x63));
+
+  // from const char*
+  b = ex::buffer::from("abc");
+  assert(b.size() == 3);
+  assert((b[0] == 0x61));
+  assert((b[1] == 0x62));
+  assert((b[2] == 0x63));
+
+  const char* ap = new char[4] { 'a', 'b', 'c', 0 };
+  b = ex::buffer::from(ap);
+  assert(b.size() == 3);
+  assert((b[0] == 0x61));
+  assert((b[1] == 0x62));
+  assert((b[2] == 0x63));
+
+  std::string ss = b.to_string();
+  assert(ss == s);
   std::cout << "buffer::from OK." << std::endl;
 }
 
@@ -147,6 +165,17 @@ void testFill() {
   assert(b[1] == 1);
   assert(b[2] == 2);
   assert(b[3] == 3);
+  char ra[4] = { 'a', 'b', 'c', 'd' };
+  b.fill(ra);
+  assert(b[0] == 'a');
+  assert(b[1] == 'b');
+  assert(b[2] == 'c');
+  assert(b[3] == 'd');
+  b.fill("efgh");
+  assert(b[0] == 'e');
+  assert(b[1] == 'f');
+  assert(b[2] == 'g');
+  assert(b[3] == 'h');
 
   std::cout << "buffer fill OK." << std::endl;
 }
@@ -176,6 +205,20 @@ void testSharedBuffer() {
   assert(sb[0] == 2);
   assert(sb[1] == 0);
   assert(sb[2] == 0);
+
+  char ra[2] = { 1, 2 };
+  sb.fill(ra);
+  assert(sb[0] == 1);
+  assert(sb[1] == 2);
+  assert(sb[2] == 0);
+
+  sb.fill("abc");
+  assert(sb[0] == 'a');
+  assert(sb[1] == 'b');
+  assert(sb[2] == 'c');
+
+  assert(sb.to_string() == "abc");
+
   std::cout << "shared buffer basic OK." << std::endl;
 }
 

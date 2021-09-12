@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -41,6 +42,12 @@ public:
     return b;
   }
 
+  template <typename T, size_t N> static buffer from(T (&t)[N]) {
+    return from(t, N);
+  }
+
+  static buffer from(const char *str) { return from(str, strlen(str)); }
+
   template <typename T> void write_le(T v, size_t offset = 0) {
     *reinterpret_cast<T *>(data() + offset) = v;
   }
@@ -75,6 +82,8 @@ public:
     auto p = t.begin();
     std::copy(p, p + size, begin() + offset);
   }
+  template <typename T, size_t N> void fill(T (&t)[N]) { fill(t, 0, N); }
+  void fill(const char *str) { fill(str, 0, strlen(str)); }
 
   void write_hex(std::string hex, size_t offset = 0,
                  bool skip_splitters_remove = false) {
@@ -125,6 +134,8 @@ public:
     delete[] c;
     return s;
   }
+
+  std::string to_string() { return std::string(begin(), end()); }
 };
 } // namespace ex
 

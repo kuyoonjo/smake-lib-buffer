@@ -53,6 +53,8 @@ public:
     auto p = t.begin();
     m_buffer.fill(t, offset + m_offset, size);
   }
+  template <typename T, size_t N> void fill(T (&t)[N]) { fill(t, 0, N); }
+  void fill(const char *str) { fill(str, 0, strlen(str)); }
 
   void write_hex(std::string hex, size_t offset = 0,
                  bool skip_splitters_remove = false) {
@@ -95,6 +97,10 @@ public:
 
   size_t size() { return m_size; }
   ex::buffer::value_type* data() { return m_buffer.data() + m_offset; }
+
+  std::string to_string() {
+    return std::string(begin(), end());
+  }
 
 private:
   ex::buffer &m_buffer;
