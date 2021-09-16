@@ -127,7 +127,7 @@ public:
     std::string fmt = "%02x";
     for (size_t i = 0; i < size; ++i) {
       auto p = c + i * (2 + splen);
-      std::sprintf(p, fmt.c_str(), at(i));
+      std::sprintf(p, fmt.c_str(), at(i + offset));
       std::copy(ss, es, p + 2);
     }
     std::string s(c, slen);
