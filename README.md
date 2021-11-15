@@ -11,6 +11,7 @@ public:
   template <typename T> static buffer from(T *p, size_t size);
   template <typename T> static buffer from(T &t);
   template <typename T> static buffer from(T &t, size_t size);
+  static buffer from(char const *str);
 
   template <typename T> void write_le(T v, size_t offset = 0);
   template <typename T> void write_be(T v, size_t offset = 0);

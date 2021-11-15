@@ -9,3 +9,4 @@
 /.cache
 /.smake
 /.vscode
+/.ninja_log
