@@ -15,7 +15,7 @@
 
 namespace ex {
 using vector_u8 = std::vector<uint8_t>;
-class buffer : public std::vector<uint8_t> {
+class buffer : public vector_u8 {
 public:
   using vector_u8::vector_u8;
   template <typename T> static T switch_endian(T t) {
