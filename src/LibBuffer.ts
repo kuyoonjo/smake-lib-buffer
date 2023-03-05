@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { LLVM } from 'smake';
+import { LLVM } from '@smake/llvm';
 
 export abstract class LibBuffer {
   static config(llvm: LLVM) {

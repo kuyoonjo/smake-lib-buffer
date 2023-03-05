@@ -1,14 +1,23 @@
 #include <array>
-#include <cassert>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ex/buffer.h>
 #include <ex/shared_buffer.h>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#define assert(x) check(x, __LINE__)
+
+void check(bool ok, int line) {
+  if (!ok) {
+    std::cout << "Failed at " << line << std::endl;
+    exit(-1);
+  }
+}
 
 void testBufferFrom() {
   std::array<int, 4> arr = {1, 2, 3, 4};
@@ -72,7 +81,7 @@ void testBufferFrom() {
   assert((b[1] == 0x62));
   assert((b[2] == 0x63));
 
-  const char* ap = new char[4] { 'a', 'b', 'c', 0 };
+  const char *ap = new char[4]{'a', 'b', 'c', 0};
   b = ex::buffer::from(ap);
   assert(b.size() == 3);
   assert((b[0] == 0x61));
@@ -113,6 +122,7 @@ void testWrite() {
   }
 
   b.write_hex("8a8b8c", 7);
+  std::cout << std::hex << (int)b[7] << "," << (int)b[8] << "," << (int)b[9] << std::endl;
   assert(b[0] == 0xff);
   assert(b[1] == 0xee);
   assert(b[2] == 0xdd);
@@ -123,6 +133,8 @@ void testWrite() {
   assert(b[7] == 0x8a);
   assert(b[8] == 0x8b);
   assert(b[9] == 0x8c);
+
+  assert(ex::buffer::from_hex("abc").read_be<uint16_t>() == 0xabc);
 
   std::cout << "buffer write OK." << std::endl;
 }
@@ -165,7 +177,7 @@ void testFill() {
   assert(b[1] == 1);
   assert(b[2] == 2);
   assert(b[3] == 3);
-  char ra[4] = { 'a', 'b', 'c', 'd' };
+  char ra[4] = {'a', 'b', 'c', 'd'};
   b.fill(ra);
   assert(b[0] == 'a');
   assert(b[1] == 'b');
@@ -206,7 +218,7 @@ void testSharedBuffer() {
   assert(sb[1] == 0);
   assert(sb[2] == 0);
 
-  char ra[2] = { 1, 2 };
+  char ra[2] = {1, 2};
   sb.fill(ra);
   assert(sb[0] == 1);
   assert(sb[1] == 2);

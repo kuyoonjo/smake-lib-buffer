@@ -48,6 +48,15 @@ public:
 
   static buffer from(const char *str) { return from(str, strlen(str)); }
 
+  static buffer from_hex(const std::string &str) {
+    auto len = str.size() / 2;
+    if (len % 2)
+      ++len;
+    buffer v(len);
+    v.write_hex(str);
+    return v;
+  }
+
   template <typename T> void write_le(T v, size_t offset = 0) {
     *reinterpret_cast<T *>(data() + offset) = v;
   }
@@ -106,13 +115,16 @@ public:
                                }),
                 hex.end());
 
-    auto data = hex.data();
     auto hlen = hex.size();
     auto len = hlen / 2;
+    auto odd = hlen % 2;
     for (size_t i = 0; i < len; ++i) {
-      (*this)[offset + i] =
-          static_cast<uint8_t>(std::stoi(hex.substr(i * 2, 2), nullptr, 16));
+      (*this)[offset + len - i - 1 + odd] =
+          static_cast<uint8_t>(std::stoi(hex.substr(hlen - 2 - i * 2, 2), nullptr, 16));
     }
+    if (odd)
+      (*this)[offset] =
+          static_cast<uint8_t>(std::stoi(hex.substr(0, 1), nullptr, 16));
   }
 
   std::string read_hex(size_t offset, size_t size = 0,
@@ -121,14 +133,13 @@ public:
       size = this->size() - offset;
     size_t splen = splitter.size();
     size_t slen = size * 2 + (size - 1) * splen;
-    auto ss = splitter.begin();
-    auto es = splitter.end();
-    char *c = new char[slen];
-    std::string fmt = "%02x";
+    auto spblen = splen + 1;
+    char *c = new char[slen + 1];
+    const char *fmt = "%02x";
     for (size_t i = 0; i < size; ++i) {
       auto p = c + i * (2 + splen);
-      std::sprintf(p, fmt.c_str(), at(i + offset));
-      std::copy(ss, es, p + 2);
+      std::snprintf(p, 3, "%02x", at(i + offset));
+      std::snprintf(p + 2, spblen, "%s", splitter.c_str());
     }
     std::string s(c, slen);
     delete[] c;
