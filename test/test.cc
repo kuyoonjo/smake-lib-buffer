@@ -309,6 +309,9 @@ TEST_CASE("shared_buffer::shared_buffer") {
   CHECK(sb[2] == 'c');
 
   CHECK(sb.to_string() == "abc");
+
+  sb[0] = '1';
+  CHECK(sb.to_string() == "1bc");
 }
 
 TEST_CASE("shared_buffer iterator") {
@@ -352,6 +355,10 @@ TEST_CASE("shared_buffer iterator") {
   CHECK(sb.back() == 0x01);
   CHECK(*sb.crbegin() == 0x01);
   CHECK(*sb.crend() == 0);
+
+  auto ptr = sb.data();
+  *ptr = 1;
+  CHECK(arr[0] == 1);
 }
 
 TEST_CASE("shared_buffer operator<<") {

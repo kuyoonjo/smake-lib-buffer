@@ -123,7 +123,7 @@ public:
   }
 
   uint8_t at(size_t i) { return *(m_ptr + i); }
-  uint8_t operator[](size_t i) { return at(i); }
+  uint8_t& operator[](size_t i) { return *(m_ptr + i); }
   uint8_t front() { return at(0); }
   uint8_t back() { return at(m_size - 1); }
 
@@ -200,7 +200,7 @@ public:
   }
 
   auto size() const { return m_size; }
-  auto *data() { return m_ptr; }
+  auto *data() const { return m_ptr; }
 
   auto to_string() const { return std::string(begin(), end()); }
 
