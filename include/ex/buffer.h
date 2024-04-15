@@ -16,6 +16,33 @@ public:
     m_size = size;
   }
 
+  buffer(const buffer &o)
+      : shared_buffer((void *)nullptr, 0), m_buffer(o.m_buffer) {
+    m_ptr = m_buffer.data();
+    m_size = m_buffer.size();
+  }
+  buffer(buffer &&o) noexcept
+      : shared_buffer((void *)nullptr, 0), m_buffer(std::move(o.m_buffer)) {
+    m_ptr = m_buffer.data();
+    m_size = m_buffer.size();
+    o.m_ptr = nullptr;
+    o.m_size = 0;
+  }
+  buffer &operator=(const buffer &o) {
+    m_buffer = o.m_buffer;
+    m_ptr = m_buffer.data();
+    m_size = m_buffer.size();
+    return *this;
+  }
+  buffer &operator=(buffer &&o) noexcept {
+    m_buffer = std::move(o.m_buffer);
+    m_ptr = m_buffer.data();
+    m_size = m_buffer.size();
+    o.m_ptr = nullptr;
+    o.m_size = 0;
+    return *this;
+  }
+
   static buffer from(std::initializer_list<uint8_t> t) {
     buffer b(t.size());
     std::copy(t.begin(), t.end(), b.m_buffer.begin());
@@ -29,8 +56,9 @@ public:
     return b;
   }
 
-  template <typename Container,
-            std::enable_if_t<_shared_buffer_::is_iterable<Container>, bool> = true>
+  template <
+      typename Container,
+      std::enable_if_t<_shared_buffer_::is_iterable<Container>, bool> = true>
   static buffer from(const Container &c, size_t size = 0) {
     using T = typename std::remove_reference<
         decltype(std::declval<Container>().front())>::type;

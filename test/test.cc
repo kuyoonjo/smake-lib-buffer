@@ -122,7 +122,8 @@ TEST_CASE("buffer::from") {
   CHECK(b.size() == 4);
   CHECK((b[0] == 0x61));
   CHECK((b[1] == 0x62));
-  CHECK((b[2] == 0x63));;
+  CHECK((b[2] == 0x63));
+  ;
   CHECK((b[3] == 0x64));
 
   // from const char*
@@ -137,7 +138,8 @@ TEST_CASE("buffer::from") {
   CHECK(b.size() == 4);
   CHECK((b[0] == 0x61));
   CHECK((b[1] == 0x62));
-  CHECK((b[2] == 0x63));;
+  CHECK((b[2] == 0x63));
+  ;
   CHECK((b[3] == 0x64));
 
   const char *ap = new char[4]{'a', 'b', 'c', 0};
@@ -250,7 +252,7 @@ TEST_CASE("shared_buffer::fill") {
   CHECK(b[2] == 'g');
   CHECK(b[3] == 'h');
 
-  uint8_t arr[4] = { 1, 2, 3, 4};
+  uint8_t arr[4] = {1, 2, 3, 4};
   b.fill(arr);
   std::cout << b << std::endl;
   CHECK(b[0] == 1);
@@ -367,6 +369,30 @@ TEST_CASE("shared_buffer operator<<") {
   auto shared = ex::shared_buffer(mac);
   std::cout << shared << std::endl;
   std::cout << 10 << std::endl;
+}
+
+TEST_CASE("buffer operator=") {
+  auto mac = ex::buffer::from_hex("3cfad3b00001");
+  auto lambda = [=] {
+    CHECK(mac.to_hex_string() == "3cfad3b00001");
+    mac.write_hex("3cfad3b00002");
+    CHECK(mac.to_hex_string() == "3cfad3b00002");
+  };
+  lambda();
+  CHECK(mac.to_hex_string() == "3cfad3b00001");
+  auto x = mac;
+  mac[0] = 1;
+  CHECK(mac.to_hex_string() == "01fad3b00001");
+  CHECK(x.to_hex_string() == "3cfad3b00001");
+  auto y = std::move(mac);
+  ex::buffer z(std::move(x));
+  CHECK(mac.to_hex_string() == "");
+  CHECK(x.to_hex_string() == "");
+  CHECK(y.to_hex_string() == "01fad3b00001");
+  CHECK(z.to_hex_string() == "3cfad3b00001");
+  z = y;
+  CHECK(y.to_hex_string() == "01fad3b00001");
+  CHECK(z.to_hex_string() == "01fad3b00001");
 }
 
 // int main() {

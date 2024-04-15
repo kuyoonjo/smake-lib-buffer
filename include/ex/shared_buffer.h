@@ -55,23 +55,23 @@ public:
     m_size = size ? size : sizeof(Num) - offset;
   }
 
-  template <typename T> void write_le(T v, size_t offset = 0) {
+  template <typename T> void write_le(T v, size_t offset = 0) const {
     buffer_write_le(m_ptr + offset, v);
   }
 
-  template <typename T> void write_be(T v, size_t offset = 0) {
+  template <typename T> void write_be(T v, size_t offset = 0) const {
     buffer_write_be(m_ptr + offset, v);
   }
 
-  template <typename T> T read_le(size_t offset = 0) {
+  template <typename T> T read_le(size_t offset = 0) const {
     return buffer_read_le<T>(m_ptr + offset);
   }
 
-  template <typename T> T read_be(size_t offset = 0) {
+  template <typename T> T read_be(size_t offset = 0) const {
     return buffer_read_be<T>(m_ptr + offset);
   }
 
-  void fill(std::initializer_list<uint8_t> t, size_t offset = 0) {
+  void fill(std::initializer_list<uint8_t> t, size_t offset = 0) const {
     std::copy(t.begin(), t.end(), m_ptr + offset);
   }
 
@@ -83,7 +83,7 @@ public:
   template <
       typename Container,
       std::enable_if_t<_shared_buffer_::is_iterable<Container>, bool> = true>
-  void fill(const Container &c, size_t offset = 0, size_t size = 0) {
+  void fill(const Container &c, size_t offset = 0, size_t size = 0) const {
     using T = typename std::remove_reference<
         decltype(std::declval<Container>().front())>::type;
     if (size == 0)
@@ -93,14 +93,14 @@ public:
 
   template <typename Str,
             std::enable_if_t<std::is_same_v<const char *, Str>, bool> = true>
-  void fill(const Str &str, size_t offset = 0, size_t size = 0) {
+  void fill(const Str &str, size_t offset = 0, size_t size = 0) const {
     if (size == 0)
       size = strlen(str);
     memcpy(m_ptr + offset, str, size);
   }
 
   template <typename Arr, size_t N>
-  void fill(const Arr (&a)[N], size_t offset = 0, size_t size = 0) {
+  void fill(const Arr (&a)[N], size_t offset = 0, size_t size = 0) const {
     if (size == 0)
       size = sizeof(Arr[N]);
     memcpy(m_ptr + offset, a, size);
@@ -108,24 +108,24 @@ public:
 
   template <typename Num,
             std::enable_if_t<std::is_arithmetic_v<Num>, bool> = true>
-  void fill(Num &&n, size_t offset = 0) {
+  void fill(Num &&n, size_t offset = 0) const {
     memcpy(m_ptr + offset, &n, sizeof(Num));
   }
 
   void write_hex(std::string hex, size_t offset = 0,
-                 bool skip_splitters_remove = false) {
+                 bool skip_splitters_remove = false) const {
     buffer_write_hex(m_ptr + offset, hex, skip_splitters_remove);
   }
 
   std::string read_hex(size_t offset, size_t size = 0,
-                       std::string splitter = "") {
+                       std::string splitter = "") const {
     return buffer_read_hex(m_ptr + offset, size, splitter);
   }
 
-  uint8_t at(size_t i) { return *(m_ptr + i); }
-  uint8_t& operator[](size_t i) { return *(m_ptr + i); }
-  uint8_t front() { return at(0); }
-  uint8_t back() { return at(m_size - 1); }
+  uint8_t at(size_t i) const { return *(m_ptr + i); }
+  uint8_t &operator[](size_t i) const { return *(m_ptr + i); }
+  uint8_t front() const { return at(0); }
+  uint8_t back() const { return at(m_size - 1); }
 
   struct iterator {
     using iterator_category = std::bidirectional_iterator_tag;
@@ -203,6 +203,9 @@ public:
   auto *data() const { return m_ptr; }
 
   auto to_string() const { return std::string(begin(), end()); }
+  auto to_hex_string(const std::string &splitter = "") const {
+    return buffer_read_hex(data(), m_size, splitter);
+  }
 
   virtual std::string to_buffer_string() const {
     std::ostringstream os;
